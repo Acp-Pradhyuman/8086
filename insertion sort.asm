@@ -4,6 +4,7 @@ data segment
     msg3 db 0dh, 0ah, 0dh, 0ah, "sorted array: $"
     msg4 db 0dh, 0ah, "$"
     msg5 db 0dh, 0ah, "enter the number of elements: $"
+    msg6 db 0dh, 0ah, "No elements to sort, enter atleast 2 numbers $"
 
     ;arr db  06h DUP (?)    ; all of the 6 elements are initialized with garbage, or we could use "DUP (00h)"
 
@@ -25,6 +26,8 @@ start:
     call get
     ;mov ah, 00h
     mov len, al
+    cmp len, 01h
+    jle display_msg
 
     mov ah, 09h
     lea dx, msg1
@@ -115,7 +118,18 @@ back3:
      mov ah, 02h     ; to print the value in dl onto the screen
      mov dl, 0dh
      int 21h
+     jmp skip1
 
+display_msg:
+     mov ah, 09h
+     lea dx, msg6
+     int 21h
+
+     mov ah, 02h     ; to print the value in dl onto the screen
+     mov dl, 0dh
+     int 21h
+
+skip1:
      mov ah, 02h     ; to print the value in dl onto the screen
      mov dl, 0ah
      int 21h
