@@ -58,28 +58,35 @@ back:
     loop back
 
 reinitialize:
-    mov ch, len
-    dec ch
+    lea si, arr
+    lea cx, arr
+    mov bx, cx
+    add bl, len
+    dec bx
 
 back2:
-    mov cl, len
-    dec cl
-    lea si, arr
+    inc si
+	mov ah, ds:[si]		; ah is the key to be compared with
+				        ; key(ah) = arr[i]
+	mov di, si
+	dec di
 
 back1:
-    mov ax, ds:[si]
-    cmp al, ah
-    ; jnc skip
-    ; jz skip
-    jle skip
-    mov ds:[si], ah
-    mov ds:[si+1], al
+    cmp di, cx		    ; di - [arr]
+	jc skip
+	mov al, ds:[di]		; ah <- ds:[si], al <- ds:[di]
+				        ; di ranges from 2000 to si-1
+
+
+	cmp al, ah		    ; al - ah, only flags are affected
+	jle skip		    ; if 1st number is smaller then carry is set
+	mov ds:[di+1], al
+	dec di			    ; j--
+	jmp back1
 
 skip:
-    inc si
-	dec cl
-	jnz back1
-	dec ch
+    mov ds:[di+1], ah	; arr[j+1] = key(ah)
+	cmp si, bx		    ; si - [arr + len -1]
 	jnz back2
 
 print_result:
