@@ -88,15 +88,17 @@ skip4:
 
 	cmp bx, si
 	jz skip2
-    mov dx, di
-	mov di, bx
+    ; mov dx, di
+	; mov di, bx
 
-	mov al, ds:[di]
+	; mov al, ds:[di]
+    mov al, ds:[bx]
 	mov ah, ds:[si]
 	mov ds:[si], al
-	mov ds:[di], ah
+	; mov ds:[di], ah
+    mov ds:[bx], ah
 
-	mov di, dx
+	; mov di, dx
 
 skip2:
 	cmp bx, si
