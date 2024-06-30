@@ -1,9 +1,12 @@
 data segment
     msg1 db 0dh, 0ah, "enter the number: $"  ; 0ah is for new line and 0dh is for carriage return
     msg2 db 0dh, 0ah, 0dh, 0ah, "factorial: $"
-    msg3 db 0dh, 0ah, "this program works from 0 to 9! $"
-    msg4 db 0dh, 0ah, "results are in hexadecimal $"
+    msg3 db 0dh, 0ah, "This program works from 0 to 12! $"
+    msg4 db 0dh, 0ah, "Results are in hexadecimal $"
     msg5 db 0dh, 0ah, "$"
+    msg6 db 0dh, 0ah, "Enter the numbers in hexadecimal as well i.e 00 to 0C! $"
+    msg7 db 0dh, 0ah, "-------------------------------------------------------$"
+    msg8 db 0dh, 0ah, "The entered number is greater than 0C (12 in decimal)  $"
 
     a   db  ?
     fact dd  ?
@@ -23,6 +26,12 @@ start:
     lea dx, msg4
     int 21h
 
+    lea dx, msg6
+    int 21h
+
+    lea dx, msg7
+    int 21h
+
     lea dx, msg5
     int 21h
 
@@ -30,6 +39,18 @@ start:
     lea dx, msg1
     int 21h
     call get
+
+    cmp al, 0dh
+    jc main
+
+    mov ah, 09h
+    lea dx, msg8
+    int 21h
+    ; jmp exit
+    jmp lable
+
+
+main:
     mov a, al
 
     mov ah, 00h     ; so that ax contains only al
@@ -54,6 +75,7 @@ start:
     dec si
     call put
 
+lable:
     mov ah, 02h     ; to print the value in dl onto the screen
     mov dl, 0dh     ; 0dh brings cursor to the first position
     int 21h
@@ -65,7 +87,7 @@ start:
     mov ah, 01h
     int 21h
 
-
+exit:
     mov ah, 4ch     ; end the program go back to DOS
     int 21h
 
@@ -135,10 +157,33 @@ endp put
 proc factorial
     cmp bx, 01h
     jle return
+
     push bx
     dec bx
     call factorial
     pop bx
+
+    cmp dx, 00h
+    jz skip
+
+    ;16*5 = 80
+    ;bx=5
+    ;dx-ax = 1-6
+    mov cx, dx	; cx = 1
+
+    mul bx		; ax = ax*bx = 0, dx=3, we need dx=3+5
+    mov si, ax	; si = 0
+    mov di, dx	; di = 3
+
+    mov ax, cx	; ax = 1
+    mul bx		; ax = 5, what if dx also fills?
+
+    mov dx, ax	; dx = 5
+    add dx, di	; dx = 5 + 3
+    mov ax, si	; ax = 0
+    jmp return
+
+skip:
     mul bx
 
 return:
